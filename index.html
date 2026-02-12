@@ -549,7 +549,9 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-se
   function unlockAudio(){
     if(audioUnlocked)return;
     audioUnlocked=true;
-    [angryMeowAudio,burpAudio,chokingAudio].forEach(function(a){
+    // Only unlock the MP3 files (network audio needs unlock)
+    // chokingAudio is a local blob WAV - doesn't need unlock
+    [angryMeowAudio,burpAudio].forEach(function(a){
       if(!a)return;
       a.muted=true;
       a.play().then(function(){a.pause();a.muted=false;a.currentTime=0;}).catch(function(){});
