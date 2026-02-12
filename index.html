@@ -3,949 +3,590 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>💕 A Question For You</title>
+<title>A Question For You MOR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#FFF5F7;--pink-soft:#FFB6C1;--pink-mid:#FF85A2;--pink-deep:#E8507A;--rose:#FF4D6D;--cream:#FFF8F0;--text-dark:#4A2040;--text-soft:#8B5E7B;--yarn-yes:#FF85A2;--yarn-yes-dark:#E8507A;--yarn-no:#B8B8D0;--yarn-no-dark:#8E8EA8}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-serif;background:var(--bg);color:var(--text-dark);-webkit-tap-highlight-color:transparent;user-select:none}
 
-:root {
-  --bg: #FFF5F7;
-  --bg-warm: #FFF0F3;
-  --pink-soft: #FFB6C1;
-  --pink-mid: #FF85A2;
-  --pink-deep: #E8507A;
-  --rose: #FF4D6D;
-  --coral: #FF6B6B;
-  --cream: #FFF8F0;
-  --text-dark: #4A2040;
-  --text-soft: #8B5E7B;
-  --yarn-yes: #FF85A2;
-  --yarn-yes-dark: #E8507A;
-  --yarn-no: #B8B8D0;
-  --yarn-no-dark: #8E8EA8;
-  --shadow-soft: 0 4px 20px rgba(232, 80, 122, 0.15);
-  --shadow-float: 0 8px 32px rgba(232, 80, 122, 0.2);
-}
+.hearts-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.hearts-bg .heart{position:absolute;font-size:20px;opacity:0.08;animation:floatHeart linear infinite}
+@keyframes floatHeart{0%{transform:translateY(110vh) rotate(0deg);opacity:0}10%{opacity:0.08}90%{opacity:0.08}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
 
-html, body {
-  width: 100%; height: 100%;
-  overflow: hidden;
-  font-family: 'Quicksand', sans-serif;
-  background: var(--bg);
-  color: var(--text-dark);
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
+#homePage{position:relative;z-index:1;width:100%;height:100%;display:flex;flex-direction:column;transition:opacity 0.6s ease,transform 0.6s ease}
+#homePage.hiding{opacity:0;transform:scale(0.95)}
 
-/* ===== FLOATING HEARTS BACKGROUND ===== */
-.hearts-bg {
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 0;
-  overflow: hidden;
-}
-.hearts-bg .heart {
-  position: absolute;
-  font-size: 20px;
-  opacity: 0.08;
-  animation: floatHeart linear infinite;
-}
-@keyframes floatHeart {
-  0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.08; }
-  90% { opacity: 0.08; }
-  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-}
+.cat-zone{flex:0 0 42%;display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:visible}
+.cat-container{position:relative;width:200px;height:200px;margin-bottom:-10px;z-index:5}
+@media(min-width:768px){.cat-container{width:260px;height:260px}}
+.cat-svg{width:100%;height:100%}
 
-/* ===== HOME PAGE ===== */
-#homePage {
-  position: relative; z-index: 1;
-  width: 100%; height: 100%;
-  display: flex; flex-direction: column;
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-#homePage.hiding {
-  opacity: 0;
-  transform: scale(0.95);
-}
+.cat-body-group{transform-origin:center bottom;animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.02)}}
+.cat-eye{animation:blink 4s ease-in-out infinite}
+.cat-eye-left{animation-delay:0s}.cat-eye-right{animation-delay:0.1s}
+@keyframes blink{0%,42%,48%,100%{transform:scaleY(1)}45%{transform:scaleY(0.05)}}
 
-/* -- Top Zone: Cat Area -- */
-.cat-zone {
-  flex: 0 0 42%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  position: relative;
-  overflow: visible;
-}
+.cat-angry{display:none}
+.cat-container.angry .cat-happy{display:none}
+.cat-container.angry .cat-angry{display:block}
+.cat-container.angry .cat-body-group{animation:none}
+.cat-container.angry .cat-eye{animation:none}
+.cat-container.angry{animation:angryShake 0.12s ease-in-out infinite!important}
+@keyframes angryShake{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-5px) rotate(-3deg)}75%{transform:translateX(5px) rotate(3deg)}}
+.cat-container:not(.angry){animation:microBounce 5s ease-in-out infinite}
+@keyframes microBounce{0%,100%{transform:translateX(0)}25%{transform:translateX(3px)}75%{transform:translateX(-3px)}}
 
-/* SVG Cat */
-.cat-container {
-  position: relative;
-  width: 200px; height: 200px;
-  margin-bottom: -10px;
-  z-index: 5;
-}
-@media (min-width: 768px) {
-  .cat-container { width: 260px; height: 260px; }
-}
+/* Canvas for unified arm+paw */
+#armCanvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 
-.cat-svg {
-  width: 100%; height: 100%;
-}
+.shelf{flex:0 0 auto;width:85%;max-width:400px;height:14px;margin:0 auto;background:linear-gradient(135deg,#DEBFA0,#C4A07A);border-radius:8px;box-shadow:0 4px 12px rgba(150,100,60,0.25);position:relative;z-index:4}
+.shelf::after{content:'';position:absolute;bottom:-6px;left:10%;right:10%;height:6px;background:rgba(150,100,60,0.12);border-radius:0 0 8px 8px;filter:blur(2px)}
 
-/* Cat breathing */
-.cat-body-group {
-  transform-origin: center bottom;
-  animation: breathe 3s ease-in-out infinite;
-}
-@keyframes breathe {
-  0%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(1.02); }
-}
+.interaction-zone{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;padding-top:18px}
+.question-text{font-family:'Caveat',cursive;font-size:clamp(24px,6vw,38px);font-weight:700;color:var(--pink-deep);text-align:center;line-height:1.3;padding:0 20px;text-shadow:0 2px 8px rgba(232,80,122,0.12)}
+.playground{flex:1;width:100%;position:relative;overflow:hidden}
 
-/* Cat eyes blinking */
-.cat-eye {
-  animation: blink 4s ease-in-out infinite;
+/* Yarn buttons - textured, SMOOTH SLIDING via transition */
+.yarn-btn{
+  position:absolute;width:90px;height:90px;border:none;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Quicksand',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;
+  color:white;text-shadow:0 2px 4px rgba(0,0,0,0.25);
+  /* KEY: smooth slide transition for left/top */
+  transition:left 1s cubic-bezier(0.34,1.56,0.64,1),top 1s cubic-bezier(0.34,1.56,0.64,1),transform 0.3s ease;
+  z-index:10;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overflow:hidden;
 }
-.cat-eye-left { animation-delay: 0s; }
-.cat-eye-right { animation-delay: 0.1s; }
-@keyframes blink {
-  0%, 42%, 48%, 100% { transform: scaleY(1); }
-  45% { transform: scaleY(0.05); }
-}
+@media(min-width:768px){.yarn-btn{width:110px;height:110px;font-size:20px}}
+.yarn-btn::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:repeating-conic-gradient(from 0deg,transparent 0deg 6deg,rgba(255,255,255,0.06) 6deg 8deg),repeating-conic-gradient(from 30deg,transparent 0deg 10deg,rgba(0,0,0,0.04) 10deg 12deg);animation:yarnSpin 10s linear infinite}
+.yarn-btn::after{content:'';position:absolute;inset:2px;border-radius:50%;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.1) 3px,rgba(255,255,255,0.1) 4px),repeating-linear-gradient(-30deg,transparent,transparent 5px,rgba(0,0,0,0.05) 5px,rgba(0,0,0,0.05) 6px),repeating-linear-gradient(80deg,transparent,transparent 4px,rgba(255,255,255,0.07) 4px,rgba(255,255,255,0.07) 5px);pointer-events:none}
+@keyframes yarnSpin{to{transform:rotate(360deg)}}
+.yarn-yes{background:radial-gradient(circle at 30% 30%,#FFB8D0,var(--yarn-yes) 45%,var(--yarn-yes-dark));box-shadow:0 6px 24px rgba(255,133,162,0.45),inset 0 -4px 8px rgba(0,0,0,0.12),inset 3px 3px 6px rgba(255,255,255,0.2),inset -2px -2px 8px rgba(180,50,90,0.2)}
+.yarn-no{background:radial-gradient(circle at 30% 30%,#D8D8EC,var(--yarn-no) 45%,var(--yarn-no-dark));box-shadow:0 6px 24px rgba(184,184,208,0.45),inset 0 -4px 8px rgba(0,0,0,0.12),inset 3px 3px 6px rgba(255,255,255,0.25),inset -2px -2px 8px rgba(100,100,140,0.2)}
+.yarn-tail{position:absolute;top:-8px;right:-5px;pointer-events:none;width:25px;height:18px}
+.yarn-tail svg{width:100%;height:100%}
+.yarn-btn:active{transform:scale(0.92)!important}
+.yarn-btn{animation:yarnPulse 2.5s ease-in-out infinite}.yarn-no{animation-delay:0.5s}
+@keyframes yarnPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.06)}}
 
-/* Angry face (hidden by default) */
-.cat-angry { display: none; }
-.cat-container.angry .cat-happy { display: none; }
-.cat-container.angry .cat-angry { display: block; }
+/* Transition page */
+#transitionPage{position:fixed;inset:0;z-index:50;background:var(--bg);display:none;overflow:hidden}
+#transitionPage.active{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.walk-cat{position:absolute;bottom:38%;width:120px;height:96px;left:-150px}
+.walk-cat.walking{animation:catWalkIn 4.5s ease-out forwards}
+@keyframes catWalkIn{0%{left:-150px}100%{left:calc(50% - 60px)}}
+.walk-cat svg .leg-left{transform-origin:top center;animation:legWalkL 0.55s ease-in-out infinite alternate}
+.walk-cat svg .leg-right{transform-origin:top center;animation:legWalkR 0.55s ease-in-out infinite alternate}
+@keyframes legWalkL{0%{transform:rotate(-15deg)}100%{transform:rotate(15deg)}}
+@keyframes legWalkR{0%{transform:rotate(15deg)}100%{transform:rotate(-15deg)}}
+.walk-cat.stopped svg .leg-left,.walk-cat.stopped svg .leg-right{animation:none;transform:rotate(0deg)}
+.walk-cat.choking svg .cat-walk-body{animation:chokeComical 0.4s ease-in-out infinite}
+@keyframes chokeComical{0%,100%{transform:scaleX(1) scaleY(1) rotate(0) translateY(0)}15%{transform:scaleX(1.25) scaleY(0.75) rotate(-5deg) translateY(4px)}35%{transform:scaleX(0.78) scaleY(1.22) rotate(4deg) translateY(-6px)}55%{transform:scaleX(1.2) scaleY(0.8) rotate(-3deg) translateY(3px)}75%{transform:scaleX(0.85) scaleY(1.15) rotate(5deg) translateY(-4px)}}
+.walk-cat .cat-walk-face-cute{display:block}.walk-cat .cat-walk-face-creepy{display:none}
+.walk-cat.choking .cat-walk-face-cute{display:none}.walk-cat.choking .cat-walk-face-creepy{display:block}
+.walk-cat.choking .choke-tongue{animation:tongueWag 0.35s ease-in-out infinite alternate}
+@keyframes tongueWag{0%{transform:rotate(-8deg) translateX(-2px)}100%{transform:rotate(8deg) translateX(2px)}}
+.walk-cat.choking .choke-eye-l{animation:eyePop 0.45s ease-in-out infinite alternate}
+.walk-cat.choking .choke-eye-r{animation:eyePop 0.45s ease-in-out infinite alternate-reverse}
+@keyframes eyePop{0%{transform:scale(1)}100%{transform:scale(1.15)}}
 
-/* Cat paw (hidden by default) */
-.cat-paw {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px) scaleY(0);
-  transform-origin: top center;
-  width: 60px; height: 80px;
-  z-index: 100;
-  pointer-events: none;
-  transition: none;
-}
-.cat-paw.smash {
-  animation: pawSmash 0.45s ease-out forwards;
-}
-@keyframes pawSmash {
-  0% { transform: translateX(-50%) translateY(20px) scaleY(0); opacity: 1; }
-  25% { transform: translateX(-50%) translateY(100px) scaleY(1); opacity: 1; }
-  35% { transform: translateX(-50%) translateY(200px) scaleY(1.05); opacity: 1; }
-  50% { transform: translateX(-50%) translateY(200px) scaleY(1); opacity: 1; }
-  70% { transform: translateX(-50%) translateY(100px) scaleY(0.8); opacity: 1; }
-  100% { transform: translateX(-50%) translateY(20px) scaleY(0); opacity: 0; }
-}
+/* Bigger hairball */
+.hairball{position:absolute;bottom:calc(38% - 55px);left:50%;transform:translateX(-50%) scale(0);width:90px;height:82px;cursor:pointer;z-index:60}
+.hairball.visible{animation:hairballAppear 0.5s ease-out forwards}
+.hairball.pumping{animation:heartPump 1.2s ease-in-out infinite}
+@keyframes hairballAppear{0%{transform:translateX(-50%) scale(0) rotate(0)}40%{transform:translateX(-50%) scale(1.3) rotate(10deg)}60%{transform:translateX(-50%) scale(0.9) rotate(-5deg)}100%{transform:translateX(-50%) scale(1) rotate(0)}}
+@keyframes heartPump{0%,100%{transform:translateX(-50%) scale(1)}15%{transform:translateX(-50%) scale(1.18)}30%{transform:translateX(-50%) scale(0.95)}45%{transform:translateX(-50%) scale(1.12)}}
+.hairball-hint{position:absolute;bottom:calc(38% - 100px);left:50%;transform:translateX(-50%);font-family:'Caveat',cursive;font-size:16px;color:var(--text-soft);opacity:0;white-space:nowrap}
+.hairball-hint.visible{animation:fadeInOut 2s ease-in-out infinite}
+@keyframes fadeInOut{0%,100%{opacity:0}50%{opacity:0.7}}
 
-/* Micro bounce */
-.cat-container {
-  animation: microBounce 5s ease-in-out infinite;
-}
-@keyframes microBounce {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(3px); }
-  75% { transform: translateX(-3px); }
-}
+/* Speech bubble */
+.speech-bubble{position:absolute;bottom:calc(38% + 80px);left:50%;transform:translateX(-50%) scale(0);background:white;border-radius:20px;padding:10px 20px;font-family:'Caveat',cursive;font-size:24px;font-weight:700;color:var(--pink-deep);box-shadow:0 4px 16px rgba(232,80,122,0.2);white-space:nowrap;z-index:70;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s ease;opacity:0}
+.speech-bubble::after{content:'';position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);border-left:10px solid transparent;border-right:10px solid transparent;border-top:12px solid white}
+.speech-bubble.visible{transform:translateX(-50%) scale(1);opacity:1}
 
-/* -- Shelf Divider -- */
-.shelf {
-  flex: 0 0 auto;
-  width: 85%;
-  max-width: 400px;
-  height: 14px;
-  margin: 0 auto;
-  background: linear-gradient(135deg, #DEBFA0, #C4A07A);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(150, 100, 60, 0.25);
-  position: relative;
-  z-index: 4;
-}
-.shelf::after {
-  content: '';
-  position: absolute;
-  bottom: -6px; left: 10%; right: 10%;
-  height: 6px;
-  background: rgba(150, 100, 60, 0.12);
-  border-radius: 0 0 8px 8px;
-  filter: blur(2px);
-}
+/* Letter */
+.letter-overlay{position:fixed;inset:0;z-index:200;background:rgba(74,32,64,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 0.5s ease}
+.letter-overlay.active{display:flex}.letter-overlay.show{opacity:1}
+.letter-card{background:var(--cream);width:100%;max-width:420px;border-radius:20px;padding:36px 28px 32px;position:relative;box-shadow:0 20px 60px rgba(74,32,64,0.3);transform:scale(0.8) translateY(40px);transition:transform 0.6s cubic-bezier(0.34,1.56,0.64,1);border:2px solid rgba(255,182,193,0.4);overflow:hidden}
+.letter-overlay.show .letter-card{transform:scale(1) translateY(0)}
+.letter-card::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--pink-soft),var(--rose),var(--pink-soft))}
+.letter-heart-deco{position:absolute;font-size:24px;opacity:0.12;pointer-events:none}
+.letter-heart-deco:nth-child(1){top:12px;right:20px;font-size:28px;transform:rotate(15deg)}
+.letter-heart-deco:nth-child(2){bottom:16px;left:18px;font-size:20px;transform:rotate(-10deg)}
+.letter-heart-deco:nth-child(3){top:50%;right:14px;font-size:16px;transform:rotate(25deg)}
+.letter-title{font-family:'Caveat',cursive;font-size:28px;font-weight:700;color:var(--rose);text-align:center;margin-bottom:24px}
+.letter-body{font-family:'Caveat',cursive;font-size:20px;line-height:1.65;color:var(--text-dark);text-align:center}
+.letter-body p{margin-bottom:14px}
+.letter-body .emphasis{color:var(--pink-deep);font-weight:600;font-size:22px}
+.letter-body .sign-off{margin-top:28px;font-size:22px;font-weight:600;color:var(--text-soft);font-style:italic}
 
-/* -- Lower Zone: Interaction Area -- */
-.interaction-zone {
-  flex: 1;
-  display: flex; flex-direction: column;
-  align-items: center;
-  position: relative;
-  padding-top: 18px;
-}
-
-.question-text {
-  font-family: 'Caveat', cursive;
-  font-size: clamp(24px, 6vw, 38px);
-  font-weight: 700;
-  color: var(--pink-deep);
-  text-align: center;
-  line-height: 1.3;
-  padding: 0 20px;
-  text-shadow: 0 2px 8px rgba(232, 80, 122, 0.12);
-}
-
-/* Button Playground */
-.playground {
-  flex: 1;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* ===== YARN BALL BUTTONS ===== */
-.yarn-btn {
-  position: absolute;
-  width: 90px; height: 90px;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Quicksand', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: white;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 10;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-@media (min-width: 768px) {
-  .yarn-btn { width: 110px; height: 110px; font-size: 20px; }
-}
-
-.yarn-btn::before {
-  content: '';
-  position: absolute; inset: 0;
-  border-radius: 50%;
-  background: repeating-conic-gradient(
-    from 0deg,
-    transparent 0deg 8deg,
-    rgba(255,255,255,0.08) 8deg 10deg
-  );
-  animation: yarnSpin 12s linear infinite;
-}
-@keyframes yarnSpin { to { transform: rotate(360deg); } }
-
-.yarn-btn::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border-radius: 50%;
-  border: 2px dashed rgba(255,255,255,0.2);
-  pointer-events: none;
-}
-
-/* Thread tail */
-.yarn-btn .thread {
-  position: absolute;
-  top: -12px; right: -8px;
-  width: 30px; height: 20px;
-  pointer-events: none;
-}
-
-.yarn-yes {
-  background: radial-gradient(circle at 35% 35%, #FFB0C8, var(--yarn-yes) 50%, var(--yarn-yes-dark));
-  box-shadow: 0 6px 24px rgba(255, 133, 162, 0.45), inset 0 -4px 8px rgba(0,0,0,0.1);
-}
-.yarn-yes:hover, .yarn-yes:active {
-  box-shadow: 0 8px 32px rgba(255, 133, 162, 0.6), inset 0 -4px 8px rgba(0,0,0,0.1);
-}
-
-.yarn-no {
-  background: radial-gradient(circle at 35% 35%, #D5D5E8, var(--yarn-no) 50%, var(--yarn-no-dark));
-  box-shadow: 0 6px 24px rgba(184, 184, 208, 0.45), inset 0 -4px 8px rgba(0,0,0,0.1);
-}
-
-.yarn-btn:active {
-  transform: scale(0.92) !important;
-}
-
-/* Idle yarn pulse */
-.yarn-btn { animation: yarnPulse 2.5s ease-in-out infinite; }
-.yarn-no { animation-delay: 0.5s; }
-@keyframes yarnPulse {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.06); }
-}
-
-/* ===== TRANSITION PAGE (after YES) ===== */
-#transitionPage {
-  position: fixed; inset: 0;
-  z-index: 50;
-  background: var(--bg);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-#transitionPage.active {
-  display: flex;
-}
-
-/* Small walking cat */
-.walk-cat {
-  position: absolute;
-  bottom: 38%;
-  width: 100px; height: 80px;
-  transform: translateX(-150px);
-}
-.walk-cat.walking {
-  animation: catWalkIn 3s ease-out forwards;
-}
-@keyframes catWalkIn {
-  0% { transform: translateX(-150px); }
-  100% { transform: translateX(0); left: calc(50% - 50px); }
-}
-
-/* Cat legs walking animation */
-.walk-cat svg .leg-left {
-  transform-origin: top center;
-  animation: legWalkL 0.4s ease-in-out infinite alternate;
-}
-.walk-cat svg .leg-right {
-  transform-origin: top center;
-  animation: legWalkR 0.4s ease-in-out infinite alternate;
-}
-@keyframes legWalkL {
-  0% { transform: rotate(-15deg); }
-  100% { transform: rotate(15deg); }
-}
-@keyframes legWalkR {
-  0% { transform: rotate(15deg); }
-  100% { transform: rotate(-15deg); }
-}
-.walk-cat.stopped svg .leg-left,
-.walk-cat.stopped svg .leg-right {
-  animation: none;
-  transform: rotate(0deg);
-}
-
-/* Choking animation */
-.walk-cat.choking svg .cat-walk-body {
-  animation: choke 0.3s ease-in-out infinite;
-}
-@keyframes choke {
-  0%, 100% { transform: scaleX(1) scaleY(1); }
-  50% { transform: scaleX(1.08) scaleY(0.92); }
-}
-
-/* Hairball */
-.hairball {
-  position: absolute;
-  bottom: calc(38% - 30px);
-  left: 50%;
-  transform: translateX(-50%) scale(0);
-  width: 50px; height: 45px;
-  cursor: pointer;
-  z-index: 60;
-  transition: transform 0.3s ease;
-}
-.hairball.visible {
-  animation: hairballAppear 0.5s ease-out forwards;
-}
-.hairball.pumping {
-  animation: heartPump 0.8s ease-in-out infinite;
-}
-@keyframes hairballAppear {
-  0% { transform: translateX(-50%) scale(0); }
-  60% { transform: translateX(-50%) scale(1.2); }
-  100% { transform: translateX(-50%) scale(1); }
-}
-@keyframes heartPump {
-  0%, 100% { transform: translateX(-50%) scale(1); }
-  15% { transform: translateX(-50%) scale(1.15); }
-  30% { transform: translateX(-50%) scale(1); }
-  45% { transform: translateX(-50%) scale(1.1); }
-}
-
-.hairball-hint {
-  position: absolute;
-  bottom: calc(38% - 70px);
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Caveat', cursive;
-  font-size: 16px;
-  color: var(--text-soft);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  white-space: nowrap;
-}
-.hairball-hint.visible {
-  animation: fadeInOut 2s ease-in-out infinite;
-}
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 0.7; }
-}
-
-/* ===== VALENTINE LETTER POPUP ===== */
-.letter-overlay {
-  position: fixed; inset: 0;
-  z-index: 200;
-  background: rgba(74, 32, 64, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-.letter-overlay.active {
-  display: flex;
-}
-.letter-overlay.show {
-  opacity: 1;
-}
-
-.letter-card {
-  background: var(--cream);
-  width: 100%;
-  max-width: 420px;
-  border-radius: 20px;
-  padding: 36px 28px 32px;
-  position: relative;
-  box-shadow: 0 20px 60px rgba(74, 32, 64, 0.3);
-  transform: scale(0.8) translateY(40px);
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 2px solid rgba(255, 182, 193, 0.4);
-  overflow: hidden;
-}
-.letter-overlay.show .letter-card {
-  transform: scale(1) translateY(0);
-}
-
-.letter-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, var(--pink-soft), var(--rose), var(--pink-soft));
-}
-
-/* Decorative hearts on letter */
-.letter-heart-deco {
-  position: absolute;
-  font-size: 24px;
-  opacity: 0.12;
-  pointer-events: none;
-}
-.letter-heart-deco:nth-child(1) { top: 12px; right: 20px; font-size: 28px; transform: rotate(15deg); }
-.letter-heart-deco:nth-child(2) { bottom: 16px; left: 18px; font-size: 20px; transform: rotate(-10deg); }
-.letter-heart-deco:nth-child(3) { top: 50%; right: 14px; font-size: 16px; transform: rotate(25deg); }
-
-.letter-title {
-  font-family: 'Caveat', cursive;
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--rose);
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.letter-body {
-  font-family: 'Caveat', cursive;
-  font-size: 20px;
-  line-height: 1.65;
-  color: var(--text-dark);
-  text-align: center;
-}
-.letter-body p {
-  margin-bottom: 14px;
-}
-.letter-body .emphasis {
-  color: var(--pink-deep);
-  font-weight: 600;
-  font-size: 22px;
-}
-.letter-body .sign-off {
-  margin-top: 28px;
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--text-soft);
-  font-style: italic;
-}
-
-/* Confetti burst */
-.confetti-container {
-  position: fixed; inset: 0;
-  pointer-events: none;
-  z-index: 250;
-}
-.confetti-piece {
-  position: absolute;
-  width: 10px; height: 10px;
-  top: -10px;
-  animation: confettiFall linear forwards;
-}
-@keyframes confettiFall {
-  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-}
-
-/* ===== SCREEN SHAKE on NO click ===== */
-.shake {
-  animation: screenShake 0.3s ease-out;
-}
-@keyframes screenShake {
-  0%, 100% { transform: translate(0); }
-  20% { transform: translate(-3px, 2px); }
-  40% { transform: translate(3px, -2px); }
-  60% { transform: translate(-2px, 1px); }
-  80% { transform: translate(2px, -1px); }
-}
-
-/* NO click counter */
-.no-counter {
-  position: absolute;
-  top: 8px; right: 12px;
-  font-family: 'Caveat', cursive;
-  font-size: 14px;
-  color: var(--text-soft);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 20;
-}
-.no-counter.visible { opacity: 0.6; }
-
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:250}
+.confetti-piece{position:absolute;width:10px;height:10px;top:-10px;animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.shake{animation:screenShake 0.35s ease-out}
+@keyframes screenShake{0%,100%{transform:translate(0)}15%{transform:translate(-5px,3px)}30%{transform:translate(5px,-3px)}45%{transform:translate(-4px,2px)}60%{transform:translate(4px,-2px)}75%{transform:translate(-2px,1px)}}
+.no-counter{position:absolute;top:8px;right:12px;font-family:'Caveat',cursive;font-size:14px;color:var(--text-soft);opacity:0;transition:opacity 0.3s ease;z-index:20}.no-counter.visible{opacity:0.6}
+.flash-overlay{position:fixed;inset:0;background:rgba(255,0,0,0.08);pointer-events:none;z-index:998;opacity:0}
+.flash-overlay.flash{animation:redFlash 0.3s ease-out forwards}
+@keyframes redFlash{0%{opacity:0.18}100%{opacity:0}}
 </style>
 </head>
 <body>
-
-<!-- Floating Hearts Background -->
+<div class="flash-overlay" id="flashOverlay"></div>
 <div class="hearts-bg" id="heartsBg"></div>
+<canvas id="armCanvas"></canvas>
 
-<!-- ===== HOME PAGE ===== -->
 <div id="homePage">
-  <!-- Top: Cat Zone -->
   <div class="cat-zone">
     <div class="cat-container" id="catContainer">
-      <!-- Cat Paw (for smash animation) -->
-      <svg class="cat-paw" id="catPaw" viewBox="0 0 60 80">
-        <g>
-          <!-- Paw arm -->
-          <rect x="18" y="0" width="24" height="55" rx="12" fill="#F4A460"/>
-          <!-- Paw pads -->
-          <ellipse cx="30" cy="62" rx="22" ry="18" fill="#F4A460"/>
-          <ellipse cx="20" cy="55" rx="7" ry="6" fill="#FFDAB9"/>
-          <ellipse cx="40" cy="55" rx="7" ry="6" fill="#FFDAB9"/>
-          <ellipse cx="30" cy="68" rx="9" ry="7" fill="#FFDAB9"/>
-          <ellipse cx="16" cy="64" rx="5" ry="5" fill="#FFDAB9"/>
-          <ellipse cx="44" cy="64" rx="5" ry="5" fill="#FFDAB9"/>
-        </g>
-      </svg>
-
-      <!-- Main Cat SVG -->
       <svg class="cat-svg" viewBox="0 0 200 200">
         <g class="cat-body-group">
-          <!-- Tail -->
-          <path d="M 40 160 Q 10 140 20 110 Q 30 90 45 100" stroke="#F4A460" stroke-width="8" fill="none" stroke-linecap="round">
-            <animate attributeName="d" dur="3s" repeatCount="indefinite"
-              values="M 40 160 Q 10 140 20 110 Q 30 90 45 100;
-                      M 40 160 Q 5 135 15 105 Q 25 85 40 95;
-                      M 40 160 Q 10 140 20 110 Q 30 90 45 100" />
-          </path>
-          <!-- Body -->
-          <ellipse cx="100" cy="155" rx="55" ry="38" fill="#F4A460"/>
-          <ellipse cx="100" cy="155" rx="50" ry="34" fill="#F5B87A"/>
-          <!-- Chest fluff -->
-          <ellipse cx="100" cy="140" rx="25" ry="18" fill="#FFDAB9" opacity="0.6"/>
-          <!-- Head -->
-          <circle cx="100" cy="95" r="40" fill="#F4A460"/>
-          <circle cx="100" cy="97" r="37" fill="#F5B87A"/>
-          <!-- Ears -->
-          <polygon points="68,72 58,38 85,62" fill="#F4A460"/>
-          <polygon points="72,70 63,44 84,63" fill="#FFB6A0"/>
-          <polygon points="132,72 142,38 115,62" fill="#F4A460"/>
-          <polygon points="128,70 137,44 116,63" fill="#FFB6A0"/>
-
-          <!-- Happy Face (default) -->
+          <path d="M 40 160 Q 10 140 20 110 Q 30 90 45 100" stroke="#D0D0DC" stroke-width="8" fill="none" stroke-linecap="round"><animate attributeName="d" dur="3s" repeatCount="indefinite" values="M 40 160 Q 10 140 20 110 Q 30 90 45 100;M 40 160 Q 5 135 15 105 Q 25 85 40 95;M 40 160 Q 10 140 20 110 Q 30 90 45 100"/></path>
+          <ellipse cx="100" cy="155" rx="55" ry="38" fill="#D0D0DC"/>
+          <ellipse cx="100" cy="155" rx="50" ry="34" fill="#E4E4EE"/>
+          <ellipse cx="100" cy="140" rx="25" ry="18" fill="#F4F4FA" opacity="0.6"/>
+          <circle cx="100" cy="95" r="40" fill="#D0D0DC"/>
+          <circle cx="100" cy="97" r="37" fill="#E4E4EE"/>
+          <polygon points="68,72 58,38 85,62" fill="#D0D0DC"/><polygon points="72,70 63,44 84,63" fill="#EAE0F0"/>
+          <polygon points="132,72 142,38 115,62" fill="#D0D0DC"/><polygon points="128,70 137,44 116,63" fill="#EAE0F0"/>
           <g class="cat-happy">
-            <!-- Eyes -->
-            <g class="cat-eye cat-eye-left" transform-origin="85 90">
-              <ellipse cx="85" cy="90" rx="6" ry="7" fill="#4A3728"/>
-              <ellipse cx="83" cy="88" rx="2" ry="2.5" fill="white" opacity="0.8"/>
-            </g>
-            <g class="cat-eye cat-eye-right" transform-origin="115 90">
-              <ellipse cx="115" cy="90" rx="6" ry="7" fill="#4A3728"/>
-              <ellipse cx="113" cy="88" rx="2" ry="2.5" fill="white" opacity="0.8"/>
-            </g>
-            <!-- Nose -->
+            <g class="cat-eye cat-eye-left" transform-origin="85 90"><ellipse cx="85" cy="90" rx="6" ry="7" fill="#2E8B57"/><ellipse cx="83" cy="88" rx="2" ry="2.5" fill="white" opacity="0.8"/></g>
+            <g class="cat-eye cat-eye-right" transform-origin="115 90"><ellipse cx="115" cy="90" rx="6" ry="7" fill="#2E8B57"/><ellipse cx="113" cy="88" rx="2" ry="2.5" fill="white" opacity="0.8"/></g>
             <polygon points="100,102 96,98 104,98" fill="#FF8C94"/>
-            <!-- Mouth -->
             <path d="M 92 106 Q 100 112 108 106" stroke="#4A3728" stroke-width="2" fill="none" stroke-linecap="round"/>
-            <!-- Whiskers -->
-            <line x1="60" y1="95" x2="82" y2="98" stroke="#D4A06A" stroke-width="1.2" opacity="0.5"/>
-            <line x1="58" y1="102" x2="81" y2="102" stroke="#D4A06A" stroke-width="1.2" opacity="0.5"/>
-            <line x1="118" y1="98" x2="140" y2="95" stroke="#D4A06A" stroke-width="1.2" opacity="0.5"/>
-            <line x1="119" y1="102" x2="142" y2="102" stroke="#D4A06A" stroke-width="1.2" opacity="0.5"/>
-            <!-- Blush -->
-            <circle cx="75" cy="105" r="8" fill="#FFB6C1" opacity="0.25"/>
-            <circle cx="125" cy="105" r="8" fill="#FFB6C1" opacity="0.25"/>
+            <line x1="60" y1="95" x2="82" y2="98" stroke="#C4C4D2" stroke-width="1.2" opacity="0.5"/><line x1="58" y1="102" x2="81" y2="102" stroke="#C4C4D2" stroke-width="1.2" opacity="0.5"/>
+            <line x1="118" y1="98" x2="140" y2="95" stroke="#C4C4D2" stroke-width="1.2" opacity="0.5"/><line x1="119" y1="102" x2="142" y2="102" stroke="#C4C4D2" stroke-width="1.2" opacity="0.5"/>
+            <circle cx="75" cy="105" r="8" fill="#FFB6C1" opacity="0.25"/><circle cx="125" cy="105" r="8" fill="#FFB6C1" opacity="0.25"/>
           </g>
-
-          <!-- Angry Face (hidden) -->
           <g class="cat-angry">
-            <!-- Angry eyes -->
-            <g>
-              <line x1="77" y1="83" x2="93" y2="90" stroke="#4A3728" stroke-width="3" stroke-linecap="round"/>
-              <ellipse cx="85" cy="92" rx="6" ry="5" fill="#4A3728"/>
-              <ellipse cx="83" cy="90" rx="1.5" ry="2" fill="#FF4444" opacity="0.8"/>
-            </g>
-            <g>
-              <line x1="123" y1="83" x2="107" y2="90" stroke="#4A3728" stroke-width="3" stroke-linecap="round"/>
-              <ellipse cx="115" cy="92" rx="6" ry="5" fill="#4A3728"/>
-              <ellipse cx="117" cy="90" rx="1.5" ry="2" fill="#FF4444" opacity="0.8"/>
-            </g>
-            <!-- Angry nose -->
-            <polygon points="100,102 96,98 104,98" fill="#FF6B6B"/>
-            <!-- Angry mouth -->
-            <path d="M 90 108 Q 100 102 110 108" stroke="#4A3728" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-            <!-- Angry whiskers (spiky) -->
-            <line x1="55" y1="90" x2="80" y2="98" stroke="#D4A06A" stroke-width="1.5" opacity="0.7"/>
-            <line x1="53" y1="100" x2="79" y2="100" stroke="#D4A06A" stroke-width="1.5" opacity="0.7"/>
-            <line x1="120" y1="98" x2="145" y2="90" stroke="#D4A06A" stroke-width="1.5" opacity="0.7"/>
-            <line x1="121" y1="100" x2="147" y2="100" stroke="#D4A06A" stroke-width="1.5" opacity="0.7"/>
+            <ellipse cx="85" cy="89" rx="12" ry="14" fill="white"/><ellipse cx="85" cy="89" rx="10" ry="12" fill="#FFFFF0"/><circle cx="85" cy="91" r="3.5" fill="#0a0500"/><circle cx="86" cy="89" r="1.2" fill="#DD0000"/>
+            <line x1="70" y1="76" x2="94" y2="80" stroke="#1A0A00" stroke-width="5" stroke-linecap="round"/><line x1="78" y1="82" x2="75" y2="78" stroke="#BB2222" stroke-width="1"/><line x1="92" y1="84" x2="96" y2="80" stroke="#BB2222" stroke-width="1"/>
+            <ellipse cx="115" cy="89" rx="12" ry="14" fill="white"/><ellipse cx="115" cy="89" rx="10" ry="12" fill="#FFFFF0"/><circle cx="115" cy="91" r="3.5" fill="#0a0500"/><circle cx="114" cy="89" r="1.2" fill="#DD0000"/>
+            <line x1="130" y1="76" x2="106" y2="80" stroke="#1A0A00" stroke-width="5" stroke-linecap="round"/><line x1="108" y1="84" x2="104" y2="80" stroke="#BB2222" stroke-width="1"/><line x1="122" y1="82" x2="125" y2="78" stroke="#BB2222" stroke-width="1"/>
+            <polygon points="100,101 93,95 107,95" fill="#FF2222"/>
+            <path d="M 80 110 L 85 104 L 90 112 L 95 103 L 100 113 L 105 103 L 110 112 L 115 104 L 120 110" stroke="#1A0A00" stroke-width="3" fill="#2A0A0A" stroke-linecap="round" stroke-linejoin="round"/>
+            <polygon points="87,106 90,112 93,106" fill="#EEE"/><polygon points="97,106 100,113 103,106" fill="#EEE"/><polygon points="107,106 110,112 113,106" fill="#EEE"/>
+            <line x1="50" y1="86" x2="76" y2="96" stroke="#9090A0" stroke-width="2.2" opacity="0.9"/><line x1="48" y1="95" x2="75" y2="99" stroke="#9090A0" stroke-width="2.2" opacity="0.9"/>
+            <line x1="124" y1="96" x2="150" y2="86" stroke="#9090A0" stroke-width="2.2" opacity="0.9"/><line x1="125" y1="99" x2="152" y2="95" stroke="#9090A0" stroke-width="2.2" opacity="0.9"/>
+            <path d="M 128 66 L 133 72 L 138 66 L 133 60 Z" fill="none" stroke="#CC2222" stroke-width="2.5"/>
+            <path d="M 62 68 L 66 73 L 70 68 L 66 63 Z" fill="none" stroke="#CC2222" stroke-width="2"/>
           </g>
-
-          <!-- Front paws -->
-          <ellipse cx="75" cy="178" rx="14" ry="8" fill="#F5B87A"/>
-          <ellipse cx="125" cy="178" rx="14" ry="8" fill="#F5B87A"/>
+          <!-- Collar + Name Tag -->
+          <rect x="78" y="124" width="44" height="7" rx="3.5" fill="#FF85A2"/>
+          <circle cx="100" cy="131" r="2" fill="#FFD700"/>
+          <rect x="89" y="132" width="22" height="15" rx="3.5" fill="#FFD700"/>
+          <rect x="90" y="133" width="20" height="13" rx="3" fill="#FFE44D"/>
+          <text x="100" y="143" text-anchor="middle" font-family="Quicksand,sans-serif" font-size="9" font-weight="700" fill="#8B6914">Lila</text>
+          <ellipse cx="75" cy="178" rx="14" ry="8" fill="#E4E4EE"/><ellipse cx="125" cy="178" rx="14" ry="8" fill="#E4E4EE"/>
         </g>
       </svg>
     </div>
   </div>
-
-  <!-- Shelf -->
   <div class="shelf"></div>
-
-  <!-- Lower: Interaction Zone -->
   <div class="interaction-zone">
-    <p class="question-text">Do you want to be my Valentine? 💕</p>
+    <p class="question-text">Do you want to be my Valentine? &#x1F495;</p>
     <div class="playground" id="playground">
       <div class="no-counter" id="noCounter"></div>
-      <button class="yarn-btn yarn-yes" id="yesBtn">YES</button>
-      <button class="yarn-btn yarn-no" id="noBtn">NO</button>
+      <button class="yarn-btn yarn-yes" id="yesBtn">YES<span class="yarn-tail"><svg viewBox="0 0 25 18"><path d="M5 16 Q8 2 15 8 Q20 12 24 4" stroke="#E8507A" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span></button>
+      <button class="yarn-btn yarn-no" id="noBtn">NO<span class="yarn-tail"><svg viewBox="0 0 25 18"><path d="M5 16 Q8 2 15 8 Q20 12 24 4" stroke="#8E8EA8" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span></button>
     </div>
   </div>
 </div>
 
-<!-- ===== TRANSITION PAGE (Cat walk + hairball) ===== -->
 <div id="transitionPage">
-  <!-- Walking Cat SVG -->
   <div class="walk-cat" id="walkCat">
-    <svg viewBox="0 0 100 80" width="100" height="80">
-      <g class="cat-walk-body" transform-origin="50 40">
-        <!-- Small cat body -->
-        <ellipse cx="50" cy="40" rx="30" ry="18" fill="#F5B87A"/>
-        <!-- Head -->
-        <circle cx="75" cy="28" r="16" fill="#F5B87A"/>
-        <!-- Ears -->
-        <polygon points="66,18 62,5 73,14" fill="#F4A460"/>
-        <polygon points="84,18 88,5 77,14" fill="#F4A460"/>
-        <polygon points="67,17 64,8 72,15" fill="#FFB6A0"/>
-        <polygon points="83,17 86,8 78,15" fill="#FFB6A0"/>
-        <!-- Eyes -->
-        <ellipse cx="71" cy="27" rx="2.5" ry="3" fill="#4A3728"/>
-        <ellipse cx="81" cy="27" rx="2.5" ry="3" fill="#4A3728"/>
-        <!-- Nose -->
-        <polygon points="76,31 74,29 78,29" fill="#FF8C94"/>
-        <!-- Mouth -->
-        <path d="M 73 33 Q 76 36 79 33" stroke="#4A3728" stroke-width="1" fill="none"/>
-        <!-- Tail -->
-        <path d="M 20 38 Q 8 25 15 12" stroke="#F4A460" stroke-width="5" fill="none" stroke-linecap="round">
-          <animate attributeName="d" dur="0.8s" repeatCount="indefinite"
-            values="M 20 38 Q 8 25 15 12; M 20 38 Q 5 20 18 10; M 20 38 Q 8 25 15 12"/>
-        </path>
-        <!-- Legs -->
-        <rect class="leg-left" x="35" y="52" width="6" height="16" rx="3" fill="#F4A460"/>
-        <rect class="leg-right" x="58" y="52" width="6" height="16" rx="3" fill="#F4A460"/>
-        <rect class="leg-left" x="42" y="52" width="6" height="16" rx="3" fill="#E8A050" opacity="0.8"/>
-        <rect class="leg-right" x="52" y="52" width="6" height="16" rx="3" fill="#E8A050" opacity="0.8"/>
+    <svg viewBox="0 0 120 96" width="120" height="96">
+      <g class="cat-walk-body" transform-origin="60 48">
+        <ellipse cx="60" cy="48" rx="35" ry="20" fill="#E4E4EE"/>
+        <!-- Walk cat collar + tag -->
+        <rect x="70" y="42" width="24" height="4" rx="2" fill="#FF85A2"/>
+        <rect x="77" y="46" width="13" height="9" rx="2.5" fill="#FFD700"/>
+        <rect x="78" y="47" width="11" height="7" rx="2" fill="#FFE44D"/>
+        <text x="83.5" y="52.5" text-anchor="middle" font-family="Quicksand,sans-serif" font-size="5" font-weight="700" fill="#8B6914">Lila</text>
+        <circle cx="88" cy="32" r="18" fill="#E4E4EE"/>
+        <polygon points="78,20 74,6 86,16" fill="#D0D0DC"/><polygon points="98,20 102,6 90,16" fill="#D0D0DC"/>
+        <polygon points="79,19 76,9 85,17" fill="#EAE0F0"/><polygon points="97,19 100,9 91,17" fill="#EAE0F0"/>
+        <g class="cat-walk-face-cute">
+          <ellipse cx="83" cy="31" rx="3" ry="3.5" fill="#2E8B57"/><ellipse cx="95" cy="31" rx="3" ry="3.5" fill="#2E8B57"/>
+          <ellipse cx="82" cy="29.5" rx="1" ry="1.2" fill="white" opacity="0.8"/><ellipse cx="94" cy="29.5" rx="1" ry="1.2" fill="white" opacity="0.8"/>
+          <polygon points="89,36 87,33.5 91,33.5" fill="#FF8C94"/>
+          <path d="M 85 38 Q 89 41 93 38" stroke="#4A3728" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <circle cx="79" cy="37" r="4" fill="#FFB6C1" opacity="0.2"/><circle cx="99" cy="37" r="4" fill="#FFB6C1" opacity="0.2"/>
+        </g>
+        <g class="cat-walk-face-creepy">
+          <g class="choke-eye-l" transform-origin="82 29"><ellipse cx="82" cy="29" rx="8" ry="9" fill="white"/><circle cx="82" cy="30" r="2.5" fill="#0a0500"/><circle cx="83" cy="28" r="1" fill="red" opacity="0.7"/></g>
+          <g class="choke-eye-r" transform-origin="96 29"><ellipse cx="96" cy="29" rx="8" ry="9" fill="white"/><circle cx="96" cy="30" r="2.5" fill="#0a0500"/><circle cx="95" cy="28" r="1" fill="red" opacity="0.7"/></g>
+          <circle cx="82" cy="30" r="5" fill="none" stroke="#CC3333" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.4"/>
+          <circle cx="96" cy="30" r="5" fill="none" stroke="#CC3333" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.4"/>
+          <ellipse cx="89" cy="42" rx="8" ry="7" fill="#2A0A0A"/><ellipse cx="89" cy="41" rx="6" ry="4" fill="#4A1A1A"/>
+          <g class="choke-tongue" transform-origin="89 46"><ellipse cx="89" cy="47" rx="4" ry="3" fill="#DD7777"/><ellipse cx="89" cy="46" rx="2.5" ry="1.5" fill="#EE9999" opacity="0.6"/></g>
+          <ellipse cx="73" cy="22" rx="2" ry="3.5" fill="#88CCFF" opacity="0.5"/><ellipse cx="106" cy="24" rx="1.8" ry="3" fill="#88CCFF" opacity="0.5"/><ellipse cx="76" cy="16" rx="1.2" ry="2" fill="#88CCFF" opacity="0.3"/>
+          <path d="M 71 18 L 69 15" stroke="#666" stroke-width="1" stroke-linecap="round"/><path d="M 73 15 L 72 12" stroke="#666" stroke-width="0.8" stroke-linecap="round"/>
+          <path d="M 107 18 L 109 15" stroke="#666" stroke-width="1" stroke-linecap="round"/><path d="M 105 15 L 106 12" stroke="#666" stroke-width="0.8" stroke-linecap="round"/>
+        </g>
+        <path d="M 25 45 Q 12 30 18 15" stroke="#D0D0DC" stroke-width="6" fill="none" stroke-linecap="round"><animate attributeName="d" dur="0.8s" repeatCount="indefinite" values="M 25 45 Q 12 30 18 15;M 25 45 Q 8 25 22 12;M 25 45 Q 12 30 18 15"/></path>
+        <rect class="leg-left" x="40" y="62" width="7" height="18" rx="3.5" fill="#D0D0DC"/><rect class="leg-right" x="68" y="62" width="7" height="18" rx="3.5" fill="#D0D0DC"/>
+        <rect class="leg-left" x="50" y="62" width="7" height="18" rx="3.5" fill="#CCCCDA" opacity="0.8"/><rect class="leg-right" x="60" y="62" width="7" height="18" rx="3.5" fill="#CCCCDA" opacity="0.8"/>
       </g>
     </svg>
   </div>
-
-  <!-- Hairball -->
-  <div class="hairball" id="hairball" title="Click me!">
-    <svg viewBox="0 0 50 45" width="50" height="45">
-      <ellipse cx="25" cy="24" rx="22" ry="19" fill="#8B7355"/>
-      <ellipse cx="25" cy="24" rx="18" ry="15" fill="#9B8365"/>
-      <!-- Hair texture -->
-      <path d="M 10 20 Q 15 15 20 20 Q 25 25 30 18 Q 35 12 40 20" stroke="#7A6245" stroke-width="1.5" fill="none" opacity="0.5"/>
-      <path d="M 8 28 Q 15 22 22 28 Q 28 34 35 26 Q 40 20 45 28" stroke="#7A6245" stroke-width="1.5" fill="none" opacity="0.4"/>
-      <path d="M 15 15 Q 20 10 28 14 Q 34 18 38 14" stroke="#6A5535" stroke-width="1" fill="none" opacity="0.3"/>
-      <!-- Paper sticking out -->
-      <rect x="18" y="6" width="14" height="10" rx="1" fill="#FFF8F0" transform="rotate(-8, 25, 11)"/>
-      <line x1="20" y1="9" x2="30" y2="8" stroke="#DDCCBB" stroke-width="0.5" transform="rotate(-8, 25, 11)"/>
-      <line x1="20" y1="12" x2="28" y2="11" stroke="#DDCCBB" stroke-width="0.5" transform="rotate(-8, 25, 11)"/>
-      <!-- Small heart on paper -->
-      <text x="23" y="12" font-size="5" fill="#FF85A2" transform="rotate(-8, 25, 11)">♥</text>
+  <div class="hairball" id="hairball">
+    <svg viewBox="0 0 90 82" width="90" height="82">
+      <ellipse cx="45" cy="44" rx="42" ry="36" fill="#6A5535"/><ellipse cx="45" cy="44" rx="36" ry="30" fill="#7A6245"/><ellipse cx="45" cy="44" rx="28" ry="23" fill="#8B7355"/><ellipse cx="45" cy="44" rx="18" ry="15" fill="#9B8365" opacity="0.5"/>
+      <path d="M 10 36 Q 20 26 32 36 Q 44 46 56 34 Q 66 24 78 36" stroke="#5A4525" stroke-width="2" fill="none" opacity="0.5"/>
+      <path d="M 8 52 Q 20 42 34 52 Q 48 62 62 50 Q 72 40 82 52" stroke="#5A4525" stroke-width="1.8" fill="none" opacity="0.4"/>
+      <path d="M 22 28 Q 32 20 46 24 Q 58 28 68 22" stroke="#4A3515" stroke-width="1.2" fill="none" opacity="0.3"/>
+      <path d="M 24 58 Q 34 64 46 58 Q 58 52 70 60" stroke="#4A3515" stroke-width="1.2" fill="none" opacity="0.3"/>
+      <path d="M 16 44 Q 28 34 40 44 Q 52 54 66 42" stroke="#6A5535" stroke-width="1" fill="none" opacity="0.25"/>
+      <rect x="30" y="6" width="24" height="18" rx="2" fill="#FFF8F0" transform="rotate(-8,42,15)" stroke="#EEDDCC" stroke-width="0.5"/>
+      <line x1="34" y1="12" x2="52" y2="11" stroke="#DDCCBB" stroke-width="0.7" transform="rotate(-8,42,15)"/>
+      <line x1="34" y1="17" x2="50" y2="16" stroke="#DDCCBB" stroke-width="0.7" transform="rotate(-8,42,15)"/>
+      <text x="40" y="18" font-size="9" fill="#FF85A2" transform="rotate(-8,42,15)">&#x2665;</text>
     </svg>
   </div>
-
-  <div class="hairball-hint" id="hairballHint">tap the hairball... 💕</div>
+  <div class="hairball-hint" id="hairballHint">tap the hairball... &#x1F495;</div>
+  <div class="speech-bubble" id="speechBubble">saranghaeyo! &#x1F495;</div>
 </div>
 
-<!-- ===== VALENTINE LETTER OVERLAY ===== -->
 <div class="letter-overlay" id="letterOverlay">
   <div class="letter-card">
-    <span class="letter-heart-deco">💕</span>
-    <span class="letter-heart-deco">🌸</span>
-    <span class="letter-heart-deco">💗</span>
-    <h2 class="letter-title">You're Invited 💌</h2>
+    <span class="letter-heart-deco">&#x1F495;</span><span class="letter-heart-deco">&#x1F338;</span><span class="letter-heart-deco">&#x1F497;</span>
+    <h2 class="letter-title">You're Invited &#x1F48C;</h2>
     <div class="letter-body">
       <p class="emphasis">You are invited this Friday to be picked up at the lobby of your house at 4:15 PM</p>
-      <p>🌹 <strong>Dressing:</strong> Semiformal</p>
-      <p>👀 <strong>Things to bring:</strong> those pretty eyes</p>
-      <p>🚫 <strong>Things NOT to bring:</strong> complaints</p>
-      <p class="sign-off">Sincerely,<br/>Your Valentine 💕</p>
+      <p>&#x1F339; <strong>Dressing:</strong> Semiformal (with the neck choking blouse and clear boots) &#x1F60F;</p>
+      <p>&#x1F440; <strong>Things to bring:</strong> those pretty eyes</p>
+      <p>&#x1F6AB; <strong>Things NOT to bring:</strong> <span style="font-weight:900;text-transform:uppercase;color:#1a0a00;font-size:24px;letter-spacing:2px">COMPLAINTS</span></p>
+      <p class="sign-off">Sincerely,<br/>Your Valentine &#x1F495;</p>
+      <button id="goBackBtn" style="margin-top:22px;padding:12px 28px;border:none;border-radius:30px;background:linear-gradient(135deg,var(--pink-mid),var(--rose));color:white;font-family:'Caveat',cursive;font-size:20px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(255,77,109,0.3);transition:transform 0.2s ease,box-shadow 0.2s ease;letter-spacing:0.5px">Go back with Lila &#x1F43E;</button>
     </div>
   </div>
 </div>
-
-<!-- Confetti container -->
 <div class="confetti-container" id="confettiContainer"></div>
 
 <script>
-(function() {
+(function(){
   'use strict';
+  var homePage=document.getElementById('homePage'),
+      catContainer=document.getElementById('catContainer'),
+      flashOverlay=document.getElementById('flashOverlay'),
+      playground=document.getElementById('playground'),
+      yesBtn=document.getElementById('yesBtn'),
+      noBtn=document.getElementById('noBtn'),
+      noCounter=document.getElementById('noCounter'),
+      armCanvas=document.getElementById('armCanvas'),
+      ctx=armCanvas.getContext('2d'),
+      transitionPage=document.getElementById('transitionPage'),
+      walkCat=document.getElementById('walkCat'),
+      hairball=document.getElementById('hairball'),
+      hairballHint=document.getElementById('hairballHint'),
+      speechBubble=document.getElementById('speechBubble'),
+      letterOverlay=document.getElementById('letterOverlay'),
+      confettiContainer=document.getElementById('confettiContainer'),
+      noClickCount=0,
+      isAnimating=false;
 
-  // ---- Elements ----
-  const homePage = document.getElementById('homePage');
-  const catContainer = document.getElementById('catContainer');
-  const catPaw = document.getElementById('catPaw');
-  const playground = document.getElementById('playground');
-  const yesBtn = document.getElementById('yesBtn');
-  const noBtn = document.getElementById('noBtn');
-  const noCounter = document.getElementById('noCounter');
+  function resizeCanvas(){armCanvas.width=window.innerWidth;armCanvas.height=window.innerHeight}
+  resizeCanvas();
+  window.addEventListener('resize',resizeCanvas);
 
-  const transitionPage = document.getElementById('transitionPage');
-  const walkCat = document.getElementById('walkCat');
-  const hairball = document.getElementById('hairball');
-  const hairballHint = document.getElementById('hairballHint');
-
-  const letterOverlay = document.getElementById('letterOverlay');
-  const confettiContainer = document.getElementById('confettiContainer');
-
-  let noClickCount = 0;
-  let isAnimating = false;
-
-  // ---- Generate floating hearts background ----
-  function createHearts() {
-    const container = document.getElementById('heartsBg');
-    const hearts = ['♥', '♡', '💕', '💗', '🌸'];
-    for (let i = 0; i < 15; i++) {
-      const h = document.createElement('span');
-      h.className = 'heart';
-      h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-      h.style.left = Math.random() * 100 + '%';
-      h.style.fontSize = (14 + Math.random() * 18) + 'px';
-      h.style.animationDuration = (12 + Math.random() * 18) + 's';
-      h.style.animationDelay = (Math.random() * 15) + 's';
-      container.appendChild(h);
+  // Floating hearts
+  (function(){
+    var c=document.getElementById('heartsBg'),h=['♥','♡','💕','💗','🌸'];
+    for(var i=0;i<15;i++){
+      var s=document.createElement('span');s.className='heart';
+      s.textContent=h[Math.floor(Math.random()*h.length)];
+      s.style.left=Math.random()*100+'%';
+      s.style.fontSize=(14+Math.random()*18)+'px';
+      s.style.animationDuration=(12+Math.random()*18)+'s';
+      s.style.animationDelay=(Math.random()*15)+'s';
+      c.appendChild(s);
     }
+  })();
+
+  // Center buttons
+  function initButtons(){
+    var r=playground.getBoundingClientRect(),sz=yesBtn.offsetWidth||90,gap=20,
+        tw=sz*2+gap,sx=(r.width-tw)/2,sy=(r.height-sz)/2;
+    yesBtn.style.left=sx+'px';yesBtn.style.top=sy+'px';
+    noBtn.style.left=(sx+sz+gap)+'px';noBtn.style.top=sy+'px';
   }
-  createHearts();
+  window.addEventListener('load',function(){setTimeout(initButtons,100)});
+  window.addEventListener('resize',function(){if(!isAnimating)initButtons()});
 
-  // ---- Position buttons centered initially ----
-  function initButtons() {
-    const rect = playground.getBoundingClientRect();
-    const btnSize = yesBtn.offsetWidth || 90;
-    const gap = 20;
-    const totalW = btnSize * 2 + gap;
-    const startX = (rect.width - totalW) / 2;
-    const startY = (rect.height - btnSize) / 2;
-
-    yesBtn.style.left = startX + 'px';
-    yesBtn.style.top = startY + 'px';
-    noBtn.style.left = (startX + btnSize + gap) + 'px';
-    noBtn.style.top = startY + 'px';
-  }
-
-  // Wait for fonts + layout
-  window.addEventListener('load', () => {
-    setTimeout(initButtons, 100);
-  });
-  window.addEventListener('resize', () => {
-    if (!isAnimating) initButtons();
-  });
-
-  // ---- Random position inside playground ----
-  function getRandomPos(btnEl) {
-    const rect = playground.getBoundingClientRect();
-    const btnSize = btnEl.offsetWidth;
-    const pad = 10;
-    const x = pad + Math.random() * (rect.width - btnSize - pad * 2);
-    const y = pad + Math.random() * (rect.height - btnSize - pad * 2);
-    return { x, y };
+  function getRandomPos(btn){
+    var r=playground.getBoundingClientRect(),sz=btn.offsetWidth,pad=10;
+    return{x:pad+Math.random()*(r.width-sz-pad*2),y:pad+Math.random()*(r.height-sz-pad*2)};
   }
 
-  // ---- NO Button Click ----
-  noBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    if (isAnimating) return;
-    isAnimating = true;
-    noClickCount++;
+  // ===== UNIFIED ARM + PAW drawn on canvas =====
+  function getCatBodyOrigin(){
+    var cr=catContainer.getBoundingClientRect();
+    return{x:cr.left+cr.width/2,y:cr.top+cr.height*0.82};
+  }
+  function getNoCenter(){
+    var nr=noBtn.getBoundingClientRect();
+    return{x:nr.left+nr.width/2,y:nr.top+nr.height/2};
+  }
 
-    // Update counter
-    const msgs = [
-      '', 'hmm...', 'really?', 'think again!',
-      'are you sure??', 'the cat is upset...', '😾😾😾',
-      'last chance!', 'SERIOUSLY?!', '💔💔💔'
-    ];
-    noCounter.textContent = msgs[Math.min(noClickCount, msgs.length - 1)];
-    if (noClickCount >= 2) noCounter.classList.add('visible');
+  // Draw paw at a point, with given angle
+  function drawPaw(cx,cy,angle){
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(angle);
+    // Main pad
+    ctx.beginPath();
+    ctx.ellipse(0,0,28,22,0,0,Math.PI*2);
+    ctx.fillStyle='#D0D0DC';ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(0,2,22,17,0,0,Math.PI*2);
+    ctx.fillStyle='#F4F4FA';ctx.globalAlpha=0.6;ctx.fill();ctx.globalAlpha=1;
+    // Toe beans
+    var beans=[[-14,-10,8,7],[14,-10,8,7],[0,12,10,8],[-16,4,6,5],[16,4,6,5]];
+    for(var i=0;i<beans.length;i++){
+      ctx.beginPath();
+      ctx.ellipse(beans[i][0],beans[i][1],beans[i][2],beans[i][3],0,0,Math.PI*2);
+      ctx.fillStyle='#F4F4FA';ctx.fill();
+    }
+    // Claws
+    ctx.strokeStyle='#777';ctx.lineWidth=2;ctx.lineCap='round';
+    var claws=[[-18,-12,-24,-20],[-10,-14,-14,-24],[10,-14,14,-24],[18,-12,24,-20]];
+    for(var i=0;i<claws.length;i++){
+      ctx.beginPath();ctx.moveTo(claws[i][0],claws[i][1]);ctx.lineTo(claws[i][2],claws[i][3]);ctx.stroke();
+    }
+    ctx.restore();
+  }
 
-    // Screen shake
-    homePage.classList.add('shake');
-    setTimeout(() => homePage.classList.remove('shake'), 300);
+  // Animate arm extending from cat to NO, arm+paw as single unit
+  function animateArmStrike(onComplete){
+    var start=getCatBodyOrigin();
+    var end=getNoCenter();
+    var duration=190;
+    var startTime=null;
 
-    // Cat angry face
-    catContainer.classList.add('angry');
+    function drawFrame(ts){
+      if(!startTime)startTime=ts;
+      var progress=Math.min((ts-startTime)/duration,1);
+      // Ease out quad
+      var ease=1-(1-progress)*(1-progress);
 
-    // Paw smash
-    catPaw.classList.remove('smash');
-    void catPaw.offsetWidth; // force reflow
-    catPaw.classList.add('smash');
+      ctx.clearRect(0,0,armCanvas.width,armCanvas.height);
 
-    // After smash animation, reset cat and move buttons
-    setTimeout(() => {
-      catContainer.classList.remove('angry');
-      catPaw.classList.remove('smash');
+      var curX=start.x+(end.x-start.x)*ease;
+      var curY=start.y+(end.y-start.y)*ease;
 
-      // Move both buttons to random positions
-      const yesPos = getRandomPos(yesBtn);
-      const noPos = getRandomPos(noBtn);
+      // Control point for curve
+      var dx=curX-start.x,dy=curY-start.y;
+      var cpx=start.x+dx*0.4+dy*0.12;
+      var cpy=start.y+dy*0.4-dx*0.06;
 
-      yesBtn.style.left = yesPos.x + 'px';
-      yesBtn.style.top = yesPos.y + 'px';
-      noBtn.style.left = noPos.x + 'px';
-      noBtn.style.top = noPos.y + 'px';
+      // Outer fur
+      ctx.beginPath();ctx.moveTo(start.x,start.y);
+      ctx.quadraticCurveTo(cpx,cpy,curX,curY);
+      ctx.strokeStyle='#D0D0DC';ctx.lineWidth=30;ctx.lineCap='round';ctx.stroke();
+      // Inner fur
+      ctx.beginPath();ctx.moveTo(start.x,start.y);
+      ctx.quadraticCurveTo(cpx,cpy,curX,curY);
+      ctx.strokeStyle='#E4E4EE';ctx.lineWidth=20;ctx.lineCap='round';ctx.stroke();
+      // Highlight
+      ctx.beginPath();ctx.moveTo(start.x,start.y);
+      ctx.quadraticCurveTo(cpx+5,cpy-4,curX,curY);
+      ctx.strokeStyle='rgba(238,238,244,0.4)';ctx.lineWidth=8;ctx.lineCap='round';ctx.stroke();
 
-      // Make YES bigger over time
-      const scale = 1 + noClickCount * 0.08;
-      yesBtn.style.transform = `scale(${Math.min(scale, 1.6)})`;
+      // Draw paw at the tip
+      var angle=Math.atan2(curY-start.y,curX-start.x)+Math.PI/2;
+      drawPaw(curX,curY,angle);
 
-      setTimeout(() => { isAnimating = false; }, 400);
-    }, 450);
-  });
+      if(progress<1){
+        requestAnimationFrame(drawFrame);
+      } else {
+        if(onComplete)onComplete();
+      }
+    }
+    requestAnimationFrame(drawFrame);
+  }
 
-  // ---- YES Button Click ----
-  yesBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    if (isAnimating) return;
-    isAnimating = true;
+  // Retract arm back
+  function retractArm(onComplete){
+    var start=getCatBodyOrigin();
+    var end=getNoCenter();
+    var duration=220;
+    var startTime=null;
 
-    // Fade out home page
-    homePage.classList.add('hiding');
+    function drawFrame(ts){
+      if(!startTime)startTime=ts;
+      var progress=Math.min((ts-startTime)/duration,1);
+      var ease=progress*progress; // ease in
 
-    setTimeout(() => {
-      homePage.style.display = 'none';
-      transitionPage.classList.add('active');
+      ctx.clearRect(0,0,armCanvas.width,armCanvas.height);
 
-      // Start cat walking
-      walkCat.classList.add('walking');
+      // Tip retracts from end toward start
+      var tipX=end.x+(start.x-end.x)*ease;
+      var tipY=end.y+(start.y-end.y)*ease;
 
-      // After walk, stop and start choking
-      setTimeout(() => {
-        walkCat.classList.add('stopped');
+      var dx=tipX-start.x,dy=tipY-start.y;
+      var cpx=start.x+dx*0.4+dy*0.12;
+      var cpy=start.y+dy*0.4-dx*0.06;
 
-        setTimeout(() => {
-          walkCat.classList.add('choking');
+      ctx.beginPath();ctx.moveTo(start.x,start.y);
+      ctx.quadraticCurveTo(cpx,cpy,tipX,tipY);
+      ctx.strokeStyle='#D0D0DC';ctx.lineWidth=30;ctx.lineCap='round';ctx.stroke();
+      ctx.beginPath();ctx.moveTo(start.x,start.y);
+      ctx.quadraticCurveTo(cpx,cpy,tipX,tipY);
+      ctx.strokeStyle='#E4E4EE';ctx.lineWidth=20;ctx.lineCap='round';ctx.stroke();
 
-          // After choking, show hairball
-          setTimeout(() => {
-            walkCat.classList.remove('choking');
-            hairball.classList.add('visible');
-
-            setTimeout(() => {
-              hairball.classList.add('pumping');
-              hairballHint.classList.add('visible');
-            }, 600);
-          }, 1800);
-        }, 600);
-      }, 3200);
-    }, 700);
-  });
-
-  // ---- Hairball Click → Letter ----
-  hairball.addEventListener('click', function() {
-    hairball.classList.remove('pumping');
-    hairball.style.transform = 'translateX(-50%) scale(0)';
-    hairballHint.classList.remove('visible');
-
-    // Show letter
-    setTimeout(() => {
-      letterOverlay.classList.add('active');
-      requestAnimationFrame(() => {
-        letterOverlay.classList.add('show');
-      });
-
-      // Confetti!
-      setTimeout(launchConfetti, 300);
-    }, 300);
-  });
-
-  // ---- Confetti ----
-  function launchConfetti() {
-    const colors = ['#FF85A2', '#FFB6C1', '#FF4D6D', '#FFDAB9', '#FF6B6B', '#E8507A', '#FFC0CB', '#FFD700'];
-    const shapes = ['circle', 'square', 'heart'];
-
-    for (let i = 0; i < 60; i++) {
-      const piece = document.createElement('div');
-      piece.className = 'confetti-piece';
-      const shape = shapes[Math.floor(Math.random() * shapes.length)];
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const size = 6 + Math.random() * 10;
-
-      piece.style.left = Math.random() * 100 + '%';
-      piece.style.width = size + 'px';
-      piece.style.height = size + 'px';
-      piece.style.background = color;
-      piece.style.animationDuration = (2 + Math.random() * 3) + 's';
-      piece.style.animationDelay = (Math.random() * 0.8) + 's';
-
-      if (shape === 'circle') {
-        piece.style.borderRadius = '50%';
-      } else if (shape === 'heart') {
-        piece.style.background = 'none';
-        piece.innerHTML = '♥';
-        piece.style.color = color;
-        piece.style.fontSize = size + 'px';
-        piece.style.width = 'auto';
-        piece.style.height = 'auto';
+      // Paw at tip (shrinking)
+      var angle=Math.atan2(tipY-start.y,tipX-start.x)+Math.PI/2;
+      var pawScale=1-ease;
+      if(pawScale>0.05){
+        ctx.save();
+        ctx.translate(tipX,tipY);
+        ctx.rotate(angle);
+        ctx.scale(pawScale,pawScale);
+        ctx.translate(-tipX,-tipY);
+        // Inline mini paw
+        ctx.translate(tipX,tipY);
+        ctx.beginPath();ctx.ellipse(0,0,28,22,0,0,Math.PI*2);ctx.fillStyle='#D0D0DC';ctx.fill();
+        ctx.restore();
       }
 
-      confettiContainer.appendChild(piece);
-      setTimeout(() => piece.remove(), 5000);
+      if(progress<1){
+        requestAnimationFrame(drawFrame);
+      } else {
+        ctx.clearRect(0,0,armCanvas.width,armCanvas.height);
+        if(onComplete)onComplete();
+      }
+    }
+    requestAnimationFrame(drawFrame);
+  }
+
+  // ===== NO CLICK =====
+  noBtn.addEventListener('click',function(e){
+    e.preventDefault();
+    if(isAnimating)return;
+    isAnimating=true;
+    noClickCount++;
+
+    var msgs=['','hmm...','really?','think again!','are you sure??','the cat is upset...','😾😾😾','last chance!','SERIOUSLY?!','💔💔💔','...','😈'];
+    noCounter.textContent=msgs[Math.min(noClickCount,msgs.length-1)];
+    if(noClickCount>=2)noCounter.classList.add('visible');
+
+    flashOverlay.classList.remove('flash');void flashOverlay.offsetWidth;flashOverlay.classList.add('flash');
+    homePage.classList.add('shake');setTimeout(function(){homePage.classList.remove('shake')},350);
+    catContainer.classList.add('angry');
+
+    // Arm strikes NO button
+    animateArmStrike(function(){
+      // Hold briefly then retract
+      setTimeout(function(){
+        retractArm(function(){
+          catContainer.classList.remove('angry');
+          // Buttons SLIDE to new positions (CSS transition handles the animation)
+          var yp=getRandomPos(yesBtn),np=getRandomPos(noBtn);
+          yesBtn.style.left=yp.x+'px';yesBtn.style.top=yp.y+'px';
+          noBtn.style.left=np.x+'px';noBtn.style.top=np.y+'px';
+          var sc=1+noClickCount*0.08;
+          yesBtn.style.transform='scale('+Math.min(sc,1.6)+')';
+          setTimeout(function(){isAnimating=false},600);
+        });
+      },100);
+    });
+  });
+
+  // ===== YES CLICK =====
+  yesBtn.addEventListener('click',function(e){
+    e.preventDefault();
+    if(isAnimating)return;
+    isAnimating=true;
+    homePage.classList.add('hiding');
+    setTimeout(function(){
+      homePage.style.display='none';
+      transitionPage.classList.add('active');
+      walkCat.classList.add('walking');
+      setTimeout(function(){
+        walkCat.classList.add('stopped');
+        setTimeout(function(){
+          walkCat.classList.add('choking');
+          setTimeout(function(){
+            walkCat.classList.remove('choking');
+            hairball.classList.add('visible');
+            setTimeout(function(){
+              hairball.classList.add('pumping');
+              hairballHint.classList.add('visible');
+            },600);
+          },3200);
+        },600);
+      },4700);
+    },700);
+  });
+
+  // ===== HAIRBALL CLICK - saranghaeyo then quick letter =====
+  hairball.addEventListener('click',function(){
+    hairball.classList.remove('pumping');
+    hairball.style.transform='translateX(-50%) scale(0)';
+    hairballHint.classList.remove('visible');
+    // Show saranghaeyo
+    speechBubble.classList.add('visible');
+    // Shorter pause - show letter quickly after
+    setTimeout(function(){
+      speechBubble.classList.remove('visible');
+      setTimeout(function(){
+        letterOverlay.classList.add('active');
+        requestAnimationFrame(function(){letterOverlay.classList.add('show')});
+        setTimeout(launchConfetti,300);
+      },150);
+    },1200);
+  });
+
+  // ===== CONFETTI =====
+  function launchConfetti(){
+    var colors=['#FF85A2','#FFB6C1','#FF4D6D','#FFDAB9','#FF6B6B','#E8507A','#FFC0CB','#FFD700'];
+    for(var i=0;i<70;i++){
+      var p=document.createElement('div');p.className='confetti-piece';
+      var c=colors[Math.floor(Math.random()*colors.length)],sz=6+Math.random()*10;
+      p.style.left=Math.random()*100+'%';p.style.width=sz+'px';p.style.height=sz+'px';
+      p.style.background=c;p.style.animationDuration=(2+Math.random()*3)+'s';
+      p.style.animationDelay=(Math.random()*0.8)+'s';
+      if(Math.random()>0.6)p.style.borderRadius='50%';
+      else if(Math.random()>0.5){p.style.background='none';p.innerHTML='♥';p.style.color=c;p.style.fontSize=sz+'px';p.style.width='auto';p.style.height='auto'}
+      confettiContainer.appendChild(p);
+      setTimeout((function(el){return function(){el.remove()}})(p),5000);
     }
   }
 
-  // ---- Close letter on outside click ----
-  letterOverlay.addEventListener('click', function(e) {
-    if (e.target === letterOverlay) {
-      // Optional: could close, but let's keep it open for this experience
-    }
+  // ===== GO BACK BUTTON =====
+  document.getElementById('goBackBtn').addEventListener('click',function(){
+    // Hide letter
+    letterOverlay.classList.remove('show');
+    setTimeout(function(){
+      letterOverlay.classList.remove('active');
+      // Hide transition page
+      transitionPage.classList.remove('active');
+      // Reset walk cat
+      walkCat.classList.remove('walking','stopped','choking');
+      walkCat.style.left='-150px';
+      // Reset hairball
+      hairball.classList.remove('visible','pumping');
+      hairball.style.transform='translateX(-50%) scale(0)';
+      hairballHint.classList.remove('visible');
+      speechBubble.classList.remove('visible');
+      // Reset confetti
+      confettiContainer.innerHTML='';
+      // Show home page
+      homePage.style.display='flex';
+      homePage.classList.remove('hiding');
+      // Reset buttons
+      noClickCount=0;
+      isAnimating=false;
+      noCounter.classList.remove('visible');
+      noCounter.textContent='';
+      yesBtn.style.transform='scale(1)';
+      initButtons();
+    },500);
   });
-
 })();
 </script>
 </body>
