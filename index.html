@@ -462,11 +462,42 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-se
     requestAnimationFrame(drawFrame);
   }
 
+  // ===== MOBILE AUDIO UNLOCK =====
+  // Mobile browsers block audio until a user gesture triggers it.
+  // We silently "unlock" all audio sources on the first tap anywhere.
+  var audioUnlocked=false;
+  function unlockAudio(){
+    if(audioUnlocked)return;
+    audioUnlocked=true;
+    // Unlock MP3 Audio elements by playing them silently
+    angryMeowAudio.muted=true;
+    angryMeowAudio.play().then(function(){angryMeowAudio.pause();angryMeowAudio.muted=false;angryMeowAudio.currentTime=0;}).catch(function(){});
+    burpAudio.muted=true;
+    burpAudio.play().then(function(){burpAudio.pause();burpAudio.muted=false;burpAudio.currentTime=0;}).catch(function(){});
+    // Unlock Web Audio API context (for synth choking)
+    var ac=getAudioCtx();
+    if(ac.state==='suspended')ac.resume();
+    // Create a silent buffer and play it to fully unlock
+    var silentBuf=ac.createBuffer(1,1,22050);
+    var silentSrc=ac.createBufferSource();
+    silentSrc.buffer=silentBuf;
+    silentSrc.connect(ac.destination);
+    silentSrc.start(0);
+    document.removeEventListener('touchstart',unlockAudio,true);
+    document.removeEventListener('touchend',unlockAudio,true);
+    document.removeEventListener('click',unlockAudio,true);
+  }
+  document.addEventListener('touchstart',unlockAudio,true);
+  document.addEventListener('touchend',unlockAudio,true);
+  document.addEventListener('click',unlockAudio,true);
+
   // ===== REAL CAT SOUNDS (MP3) =====
   var angryMeowAudio=new Audio('angre_meow.mp3');
   angryMeowAudio.volume=0.7;
+  angryMeowAudio.load();
   var burpAudio=new Audio('burp.mp3');
   burpAudio.volume=0.8;
+  burpAudio.load();
 
   function playAngryMeow(){
     try{angryMeowAudio.currentTime=0;angryMeowAudio.play();}catch(e){}
