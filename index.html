@@ -462,35 +462,6 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-se
     requestAnimationFrame(drawFrame);
   }
 
-  // ===== MOBILE AUDIO UNLOCK =====
-  // Mobile browsers block audio until a user gesture triggers it.
-  // We silently "unlock" all audio sources on the first tap anywhere.
-  var audioUnlocked=false;
-  function unlockAudio(){
-    if(audioUnlocked)return;
-    audioUnlocked=true;
-    // Unlock MP3 Audio elements by playing them silently
-    angryMeowAudio.muted=true;
-    angryMeowAudio.play().then(function(){angryMeowAudio.pause();angryMeowAudio.muted=false;angryMeowAudio.currentTime=0;}).catch(function(){});
-    burpAudio.muted=true;
-    burpAudio.play().then(function(){burpAudio.pause();burpAudio.muted=false;burpAudio.currentTime=0;}).catch(function(){});
-    // Unlock Web Audio API context (for synth choking)
-    var ac=getAudioCtx();
-    if(ac.state==='suspended')ac.resume();
-    // Create a silent buffer and play it to fully unlock
-    var silentBuf=ac.createBuffer(1,1,22050);
-    var silentSrc=ac.createBufferSource();
-    silentSrc.buffer=silentBuf;
-    silentSrc.connect(ac.destination);
-    silentSrc.start(0);
-    document.removeEventListener('touchstart',unlockAudio,true);
-    document.removeEventListener('touchend',unlockAudio,true);
-    document.removeEventListener('click',unlockAudio,true);
-  }
-  document.addEventListener('touchstart',unlockAudio,true);
-  document.addEventListener('touchend',unlockAudio,true);
-  document.addEventListener('click',unlockAudio,true);
-
   // ===== REAL CAT SOUNDS (MP3) =====
   var angryMeowAudio=new Audio('angre_meow.mp3');
   angryMeowAudio.volume=0.7;
@@ -506,55 +477,90 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-se
     try{burpAudio.currentTime=0;burpAudio.play();}catch(e){}
   }
 
-  // ===== SYNTHESIZED CHOKING SOUND (kept) =====
-  var audioCtx=null;
-  function getAudioCtx(){
-    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    return audioCtx;
-  }
-  function playChokingSound(){
+  // ===== PRE-RENDERED CHOKING SOUND (as WAV blob for mobile compat) =====
+  var chokingAudio=null;
+  (function buildChokingSound(){
     try{
-      var ac=getAudioCtx(),t=ac.currentTime;
-      var gagCount=7;
-      for(var g=0;g<gagCount;g++){
-        var gt=t+g*0.4;
-        var osc=ac.createOscillator();var gain=ac.createGain();
-        osc.type='triangle';
+      var sr=22050,dur=3.4,len=Math.floor(sr*dur);
+      var buf=new Float32Array(len);
+      // Generate 7 gags + final retch directly into buffer
+      for(var g=0;g<7;g++){
+        var gStart=Math.floor(g*0.4*sr);
         var baseF=150+Math.random()*30;
-        osc.frequency.setValueAtTime(baseF,gt);
-        osc.frequency.linearRampToValueAtTime(baseF*1.8,gt+0.06);
-        osc.frequency.linearRampToValueAtTime(baseF*0.7,gt+0.15);
-        osc.frequency.linearRampToValueAtTime(baseF*1.3,gt+0.2);
-        gain.gain.setValueAtTime(0,gt);
-        gain.gain.linearRampToValueAtTime(0.12+g*0.01,gt+0.02);
-        gain.gain.setValueAtTime(0.1+g*0.01,gt+0.1);
-        gain.gain.exponentialRampToValueAtTime(0.005,gt+0.25);
-        var filt=ac.createBiquadFilter();filt.type='bandpass';filt.frequency.value=500;filt.Q.value=4;
-        osc.connect(filt);filt.connect(gain);gain.connect(ac.destination);
-        osc.start(gt);osc.stop(gt+0.28);
-        var nDur=0.1;
-        var nBuf=ac.createBuffer(1,Math.floor(ac.sampleRate*nDur),ac.sampleRate);
-        var nD=nBuf.getChannelData(0);
-        for(var i=0;i<nD.length;i++)nD[i]=(Math.random()*2-1)*0.15;
-        var nSrc=ac.createBufferSource();nSrc.buffer=nBuf;
-        var nG=ac.createGain();
-        nG.gain.setValueAtTime(0.06,gt+0.03);
-        nG.gain.exponentialRampToValueAtTime(0.005,gt+0.03+nDur);
-        var nF=ac.createBiquadFilter();nF.type='bandpass';nF.frequency.value=350+Math.random()*150;nF.Q.value=2;
-        nSrc.connect(nF);nF.connect(nG);nG.connect(ac.destination);
-        nSrc.start(gt+0.03);nSrc.stop(gt+0.03+nDur);
+        // Each gag: ~0.25s
+        for(var i=0;i<Math.floor(0.25*sr)&&(gStart+i)<len;i++){
+          var t=i/sr;
+          // Pitch sweep: up then down then up
+          var freq=baseF;
+          if(t<0.06)freq=baseF+(baseF*0.8)*(t/0.06);
+          else if(t<0.15)freq=baseF*1.8-(baseF*1.1)*((t-0.06)/0.09);
+          else freq=baseF*0.7+(baseF*0.6)*((t-0.15)/0.1);
+          // Triangle wave
+          var phase=(i*freq/sr)%1;
+          var tri=phase<0.5?(4*phase-1):(3-4*phase);
+          // Envelope
+          var env=0;
+          if(t<0.02)env=t/0.02*(0.12+g*0.01);
+          else if(t<0.1)env=0.1+g*0.01;
+          else env=(0.1+g*0.01)*Math.max(0.01,(0.25-t)/0.15);
+          // Add noise gurgle
+          var noise=(Math.random()*2-1)*0.06*Math.max(0,(0.13-(t-0.03))/0.1);
+          buf[gStart+i]+=tri*env+noise;
+        }
       }
-      var ft=t+gagCount*0.4;
-      var fO=ac.createOscillator();var fG=ac.createGain();
-      fO.type='triangle';
-      fO.frequency.setValueAtTime(130,ft);fO.frequency.linearRampToValueAtTime(280,ft+0.08);
-      fO.frequency.exponentialRampToValueAtTime(80,ft+0.35);
-      fG.gain.setValueAtTime(0.18,ft);fG.gain.exponentialRampToValueAtTime(0.005,ft+0.4);
-      var fF=ac.createBiquadFilter();fF.type='bandpass';fF.frequency.value=400;fF.Q.value=3;
-      fO.connect(fF);fF.connect(fG);fG.connect(ac.destination);
-      fO.start(ft);fO.stop(ft+0.45);
+      // Final retch at ~2.8s
+      var rStart=Math.floor(2.8*sr);
+      for(var i=0;i<Math.floor(0.4*sr)&&(rStart+i)<len;i++){
+        var t=i/sr;
+        var freq=130;
+        if(t<0.08)freq=130+150*(t/0.08);
+        else freq=280*Math.pow(80/280,((t-0.08)/0.27));
+        var phase=(i*freq/sr)%1;
+        var tri=phase<0.5?(4*phase-1):(3-4*phase);
+        var env=0.18*Math.max(0.01,(0.4-t)/0.4);
+        buf[rStart+i]+=tri*env;
+      }
+      // Convert to 16-bit PCM WAV
+      var numSamples=buf.length;
+      var wavBuf=new ArrayBuffer(44+numSamples*2);
+      var view=new DataView(wavBuf);
+      function writeStr(off,s){for(var i=0;i<s.length;i++)view.setUint8(off+i,s.charCodeAt(i))}
+      writeStr(0,'RIFF');view.setUint32(4,36+numSamples*2,true);writeStr(8,'WAVE');
+      writeStr(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);
+      view.setUint16(22,1,true);view.setUint32(24,sr,true);view.setUint32(28,sr*2,true);
+      view.setUint16(32,2,true);view.setUint16(34,16,true);
+      writeStr(36,'data');view.setUint32(40,numSamples*2,true);
+      for(var i=0;i<numSamples;i++){
+        var s=Math.max(-1,Math.min(1,buf[i]));
+        view.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);
+      }
+      var blob=new Blob([wavBuf],{type:'audio/wav'});
+      chokingAudio=new Audio(URL.createObjectURL(blob));
+      chokingAudio.volume=0.6;
     }catch(e){}
+  })();
+
+  function playChokingSound(){
+    try{if(chokingAudio){chokingAudio.currentTime=0;chokingAudio.play();}}catch(e){}
   }
+
+  // ===== MOBILE AUDIO UNLOCK (after all Audio objects exist) =====
+  var audioUnlocked=false;
+  function unlockAudio(){
+    if(audioUnlocked)return;
+    audioUnlocked=true;
+    [angryMeowAudio,burpAudio,chokingAudio].forEach(function(a){
+      if(!a)return;
+      a.muted=true;
+      a.play().then(function(){a.pause();a.muted=false;a.currentTime=0;}).catch(function(){});
+    });
+    document.removeEventListener('touchstart',unlockAudio,true);
+    document.removeEventListener('touchend',unlockAudio,true);
+    document.removeEventListener('click',unlockAudio,true);
+  }
+  document.addEventListener('touchstart',unlockAudio,true);
+  document.addEventListener('touchend',unlockAudio,true);
+  document.addEventListener('click',unlockAudio,true);
 
   // ===== NO CLICK =====
   noBtn.addEventListener('click',function(e){
