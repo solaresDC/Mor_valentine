@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>A Question For You MOR</title>
+<title>💕 A Question For You MOR 🥺</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -51,15 +51,14 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-se
 
 /* Yarn buttons - textured, SMOOTH SLIDING via transition */
 .yarn-btn{
-  position:absolute;width:90px;height:90px;border:none;border-radius:50%;cursor:pointer;
+  position:absolute;width:74px;height:74px;border:none;border-radius:50%;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Quicksand',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;
+  font-family:'Quicksand',sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;
   color:white;text-shadow:0 2px 4px rgba(0,0,0,0.25);
-  /* KEY: smooth slide transition for left/top */
-  transition:left 1s cubic-bezier(0.34,1.56,0.64,1),top 1s cubic-bezier(0.34,1.56,0.64,1),transform 0.3s ease;
+  transition:left 0.65s cubic-bezier(0.34,1.56,0.64,1),top 0.65s cubic-bezier(0.34,1.56,0.64,1),transform 0.3s ease;
   z-index:10;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overflow:hidden;
 }
-@media(min-width:768px){.yarn-btn{width:110px;height:110px;font-size:20px}}
+@media(min-width:768px){.yarn-btn{width:90px;height:90px;font-size:18px}}
 .yarn-btn::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:repeating-conic-gradient(from 0deg,transparent 0deg 6deg,rgba(255,255,255,0.06) 6deg 8deg),repeating-conic-gradient(from 30deg,transparent 0deg 10deg,rgba(0,0,0,0.04) 10deg 12deg);animation:yarnSpin 10s linear infinite}
 .yarn-btn::after{content:'';position:absolute;inset:2px;border-radius:50%;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.1) 3px,rgba(255,255,255,0.1) 4px),repeating-linear-gradient(-30deg,transparent,transparent 5px,rgba(0,0,0,0.05) 5px,rgba(0,0,0,0.05) 6px),repeating-linear-gradient(80deg,transparent,transparent 4px,rgba(255,255,255,0.07) 4px,rgba(255,255,255,0.07) 5px);pointer-events:none}
 @keyframes yarnSpin{to{transform:rotate(360deg)}}
@@ -190,7 +189,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-se
     <p class="question-text">Do you want to be my Valentine? &#x1F495;</p>
     <div class="playground" id="playground">
       <div class="no-counter" id="noCounter"></div>
-      <button class="yarn-btn yarn-yes" id="yesBtn">YES<span class="yarn-tail"><svg viewBox="0 0 25 18"><path d="M5 16 Q8 2 15 8 Q20 12 24 4" stroke="#E8507A" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span></button>
+      <button class="yarn-btn yarn-yes" id="yesBtn">Sí<span class="yarn-tail"><svg viewBox="0 0 25 18"><path d="M5 16 Q8 2 15 8 Q20 12 24 4" stroke="#E8507A" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span></button>
       <button class="yarn-btn yarn-no" id="noBtn">NO<span class="yarn-tail"><svg viewBox="0 0 25 18"><path d="M5 16 Q8 2 15 8 Q20 12 24 4" stroke="#8E8EA8" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span></button>
     </div>
   </div>
@@ -364,7 +363,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-se
   function animateArmStrike(onComplete){
     var start=getCatBodyOrigin();
     var end=getNoCenter();
-    var duration=190;
+    var duration=110;
     var startTime=null;
 
     function drawFrame(ts){
@@ -413,7 +412,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-se
   function retractArm(onComplete){
     var start=getCatBodyOrigin();
     var end=getNoCenter();
-    var duration=220;
+    var duration=130;
     var startTime=null;
 
     function drawFrame(ts){
@@ -463,12 +462,77 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-se
     requestAnimationFrame(drawFrame);
   }
 
+  // ===== REAL CAT SOUNDS (MP3) =====
+  var angryMeowAudio=new Audio('angre_meow.mp3');
+  angryMeowAudio.volume=0.7;
+  var burpAudio=new Audio('burp.mp3');
+  burpAudio.volume=0.8;
+
+  function playAngryMeow(){
+    try{angryMeowAudio.currentTime=0;angryMeowAudio.play();}catch(e){}
+  }
+  function playBurp(){
+    try{burpAudio.currentTime=0;burpAudio.play();}catch(e){}
+  }
+
+  // ===== SYNTHESIZED CHOKING SOUND (kept) =====
+  var audioCtx=null;
+  function getAudioCtx(){
+    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    return audioCtx;
+  }
+  function playChokingSound(){
+    try{
+      var ac=getAudioCtx(),t=ac.currentTime;
+      var gagCount=7;
+      for(var g=0;g<gagCount;g++){
+        var gt=t+g*0.4;
+        var osc=ac.createOscillator();var gain=ac.createGain();
+        osc.type='triangle';
+        var baseF=150+Math.random()*30;
+        osc.frequency.setValueAtTime(baseF,gt);
+        osc.frequency.linearRampToValueAtTime(baseF*1.8,gt+0.06);
+        osc.frequency.linearRampToValueAtTime(baseF*0.7,gt+0.15);
+        osc.frequency.linearRampToValueAtTime(baseF*1.3,gt+0.2);
+        gain.gain.setValueAtTime(0,gt);
+        gain.gain.linearRampToValueAtTime(0.12+g*0.01,gt+0.02);
+        gain.gain.setValueAtTime(0.1+g*0.01,gt+0.1);
+        gain.gain.exponentialRampToValueAtTime(0.005,gt+0.25);
+        var filt=ac.createBiquadFilter();filt.type='bandpass';filt.frequency.value=500;filt.Q.value=4;
+        osc.connect(filt);filt.connect(gain);gain.connect(ac.destination);
+        osc.start(gt);osc.stop(gt+0.28);
+        var nDur=0.1;
+        var nBuf=ac.createBuffer(1,Math.floor(ac.sampleRate*nDur),ac.sampleRate);
+        var nD=nBuf.getChannelData(0);
+        for(var i=0;i<nD.length;i++)nD[i]=(Math.random()*2-1)*0.15;
+        var nSrc=ac.createBufferSource();nSrc.buffer=nBuf;
+        var nG=ac.createGain();
+        nG.gain.setValueAtTime(0.06,gt+0.03);
+        nG.gain.exponentialRampToValueAtTime(0.005,gt+0.03+nDur);
+        var nF=ac.createBiquadFilter();nF.type='bandpass';nF.frequency.value=350+Math.random()*150;nF.Q.value=2;
+        nSrc.connect(nF);nF.connect(nG);nG.connect(ac.destination);
+        nSrc.start(gt+0.03);nSrc.stop(gt+0.03+nDur);
+      }
+      var ft=t+gagCount*0.4;
+      var fO=ac.createOscillator();var fG=ac.createGain();
+      fO.type='triangle';
+      fO.frequency.setValueAtTime(130,ft);fO.frequency.linearRampToValueAtTime(280,ft+0.08);
+      fO.frequency.exponentialRampToValueAtTime(80,ft+0.35);
+      fG.gain.setValueAtTime(0.18,ft);fG.gain.exponentialRampToValueAtTime(0.005,ft+0.4);
+      var fF=ac.createBiquadFilter();fF.type='bandpass';fF.frequency.value=400;fF.Q.value=3;
+      fO.connect(fF);fF.connect(fG);fG.connect(ac.destination);
+      fO.start(ft);fO.stop(ft+0.45);
+    }catch(e){}
+  }
+
   // ===== NO CLICK =====
   noBtn.addEventListener('click',function(e){
     e.preventDefault();
     if(isAnimating)return;
     isAnimating=true;
     noClickCount++;
+
+    playAngryMeow();
 
     var msgs=['','hmm...','really?','think again!','are you sure??','the cat is upset...','😾😾😾','last chance!','SERIOUSLY?!','💔💔💔','...','😈'];
     noCounter.textContent=msgs[Math.min(noClickCount,msgs.length-1)];
@@ -510,9 +574,11 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-se
         walkCat.classList.add('stopped');
         setTimeout(function(){
           walkCat.classList.add('choking');
+          playChokingSound();
           setTimeout(function(){
             walkCat.classList.remove('choking');
             hairball.classList.add('visible');
+            playBurp();
             setTimeout(function(){
               hairball.classList.add('pumping');
               hairballHint.classList.add('visible');
